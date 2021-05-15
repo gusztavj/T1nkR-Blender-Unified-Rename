@@ -78,8 +78,7 @@ class T1NKER_OT_RenameCollection(Operator):
 
     # Draw operator to show export settings during invoke =========================================================================
     def draw(self, context):        
-        layout = self.layout
-        layout.label(text="Default settings")                
+        layout = self.layout        
         layout.prop(self.settings, "isRegex")
         layout.prop(self.settings, "findWhat")
         layout.prop(self.settings, "replaceWith")
