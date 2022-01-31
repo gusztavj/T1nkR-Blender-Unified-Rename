@@ -57,9 +57,9 @@ class T1nkerRenameCollectionAddonPreferences(AddonPreferences):
         layout.prop(self.settings, "includeCollections")        
 
 
-# Main export operator class
+# Main operator class
 class T1NKER_OT_RenameCollection(Operator):    
-    """Export object compilations for Trainz"""
+    """Rename objects and collections, even using regex"""
     bl_idname = "t1nker.renamecollection"
     bl_label = "Rename collections"
     bl_options = {'REGISTER', 'UNDO'}    
