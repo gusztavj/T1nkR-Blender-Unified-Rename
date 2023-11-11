@@ -133,6 +133,9 @@ class T1NKER_OT_RenameCollection(Operator):
     # Here is the core stuff ======================================================================================================
     def execute(self, context):              
         
+        print(f"T1nk-R Rename Collection started")
+        print(f"------------------------------------")
+
         collections = [i for i in bpy.context.selected_ids if isinstance(i, bpy.types.Collection)]
         objects = [i for i in bpy.context.selected_ids if isinstance(i, bpy.types.Object)]
 
@@ -145,7 +148,8 @@ class T1NKER_OT_RenameCollection(Operator):
             for objectElement in objects:
                 object: bpy.types.Object = objectElement
                 self._performFindAndReplace(object)   
-                                            
+
+        print(f"------ T1nk-R Rename Collection started")                                            
         return {'FINISHED'}
     
 
