@@ -67,7 +67,7 @@ class T1NKER_OT_RenameCollection(Operator):
     # Operator settings
     settings : T1nkerRenameCollectionAddonSettings = None        
 
-    # Constructor =================================================================================================================
+    # Lifecycle management ========================================================================================================
     def __init__(self):
         self.settings = None
     
