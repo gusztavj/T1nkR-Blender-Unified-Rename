@@ -6,10 +6,10 @@
 # Module and add-on authored by T1nk-R (https://github.com/gusztavj/)
 #
 # PURPOSE & USAGE *****************************************************************************************************************
-# You can use this add-on to get a single panel to batch rename collections, objects and object data in Blender's Outliner
+# You can use this add-on to get a single panel to batch rename collections and objects shown in Blender's Outliner
 # using text or regex-based search and replace.
 #
-# Help, support, updates and anything else: https://github.com/gusztavj/Custom-Object-Property-Manager
+# Help, support, updates and anything else: https://github.com/gusztavj/T1nkR-Blender-Unified-Rename
 #
 # COPYRIGHT ***********************************************************************************************************************
 # Creative Commons CC BY-NC-SA:
@@ -34,25 +34,29 @@
 # DISCLAIMER **********************************************************************************************************************
 # This add-on is provided as-is. Use at your own risk. No warranties, no guarantee, no liability,
 # no matter what happens. Still I tried to make sure no weird things happen:
-#   * This add-on is intended to change the name of your Blender objects, collections and data blocks belonging to objects.
+#   * This add-on is intended to change the name of your Blender objects and collections matching the criteria you specify.
 #   * This add-on is not intended to modify your objects and other Blender assets in any other way.
 #   * You shall be able to simply undo consequences made by this add-on.
 #
-# You may learn more about legal matters on page https://github.com/gusztavj/Custom-Object-Property-Manager
+# You may learn more about legal matters on page https://github.com/gusztavj/T1nkR-Blender-Unified-Rename
 #
 # *********************************************************************************************************************************
 
+# Blender add-on identification ===================================================================================================
 bl_info = {
-    "name": "T1nk-R Collection Renamer",
-    "author": "GusJ",
+    "name": "T1nk-R Ultimate Rename (T1nk-R Utilities)",
+    "author": "T1nk-R (GusJ)",
     "version": (1, 0, 0),
     "blender": (2, 91, 0),
-    "location": "Edit",
-    "description": "Rename your collections",
-    "category": "User Interface",
-    "doc_url": "Yet to come, till that just drop a mail to Gus at na.mondhatod@gmail.com",
+    "location": "Outliner > Context menu, Outliner > Context menu of objects and collections",
+    "description": "Rename collections and objects in one go, using plain text or regex. Open from Edit menu or hit CTRL+SHIFT+F2 in Outliner.",
+    "category": "Object",
+    "doc_url": "https://github.com/gusztavj/T1nkR-Blender-Unified-Rename",
 }
 
+# Lifecycle management ============================================================================================================
+
+# Reload the main module to make sure it's up to date
 if "bpy" in locals():
     from importlib import reload
     reload(rename)
@@ -61,22 +65,40 @@ if "bpy" in locals():
 import bpy
 from . import rename
 
-# Store keymaps here to access after registration
+# Properties ======================================================================================================================
+
+
 addon_keymaps = []
+"""
+Store keymaps here to access after registration.
+"""
 
-# Register menu item  "Export Compilations to Trainz" under File > Export  
-def menuItem(self, context):
-    self.layout.operator(rename.T1NKER_OT_RenameCollection.bl_idname)
-
-# Class registry
 classes = [
-    rename.T1nkerRenameCollectionAddonSettings, 
-    rename.T1nkerRenameCollectionAddonPreferences, 
-    rename.T1NKER_OT_RenameCollection
+    rename.T1nkerUltimateRenameAddonSettings, 
+    rename.T1nkerUltimateRenameAddonPreferences, 
+    rename.T1NKER_OT_UltimateRename
 ]
+"""
+List of classes requiring registration and unregistration.
+"""
 
-# Register the plugin
+
+        
+# Public functions ================================================================================================================
+
+# Register menu item --------------------------------------------------------------------------------------------------------------
+def menuItem(self, context):
+    """
+    Add a menu item
+    """
+    self.layout.operator_context = 'INVOKE_DEFAULT'
+    self.layout.operator(rename.T1NKER_OT_UltimateRename.bl_idname)
+
+# Register the plugin -------------------------------------------------------------------------------------------------------------
 def register():
+    """
+    Perform registration of the add-on when being enabled.
+    """
     
     # Make sure to avoid double registration
     unregister()
@@ -85,39 +107,68 @@ def register():
     for c in classes:
         bpy.utils.register_class(c)
     
-    # Add menu command to File > Export
-    bpy.types.TOPBAR_MT_edit.append(menuItem)
+    # Add menu command to the context menu of the Outliner editor space
     bpy.types.OUTLINER_MT_context_menu.append(menuItem)
+    bpy.types.OUTLINER_MT_collection.append(menuItem)
+    bpy.types.OUTLINER_MT_object.append(menuItem)
+    
 
-    # Set CTRL+SHIFT+Y as shortcut
+    # Configure hotkey
+    #
+    
     wm = bpy.context.window_manager
+
     # Note that in background mode (no GUI available), keyconfigs are not available either,
     # so we have to check this to avoid nasty errors in background case.
     kc = wm.keyconfigs.addon
-    if kc:
+    
+    if kc: # Blender runs with GUI
+        # The hotkey will only be available when the mouse is within an Outliner
         km = wm.keyconfigs.addon.keymaps.new(name='Outliner', space_type='OUTLINER')
-        kmi = km.keymap_items.new(rename.T1NKER_OT_RenameCollection.bl_idname, 'F2', 'PRESS', ctrl=True, shift=True)
+        
+        kmi = km.keymap_items.new(rename.T1NKER_OT_UltimateRename.bl_idname, 'F2', 'PRESS', ctrl=True, shift=True)
+        
         addon_keymaps.append((km, kmi))
 
-# Unregister the plugin
+# Unregister the plugin -----------------------------------------------------------------------------------------------------------
 def unregister():
 
-    # Put in try since we perform this as a preliminary cleanup of leftover stuff during registration    
+    # Put in try since we perform this as a preliminary cleanup of leftover stuff during registration,
+    # and it may be normal that unregistering something simply does not work without being registered first.
     try:
         # Unregister key mapping
         for km, kmi in addon_keymaps:
             km.keymap_items.remove(kmi)
+            
         addon_keymaps.clear()
 
         # Unregister classes (in reverse order)
         for c in reversed(classes):
-            bpy.utils.unregister_class(c)
+            try:
+                bpy.utils.unregister_class(c)
+            except:
+                # Don't panic, it was probably not registered
+                pass
         
-        # Delete menu item
-        bpy.types.TOPBAR_MT_file_export.remove(menuItem)
+        # Delete menu items in separate try blocks so if one fails others may still be attempted to be removed
+        try:
+            bpy.types.OUTLINER_MT_context_menu.remove(menuItem)
+        except:
+            pass
+        try:
+            bpy.types.OUTLINER_MT_collection.remove(menuItem)
+        except:
+            pass
+        try:
+            bpy.types.OUTLINER_MT_object.remove(menuItem)
+        except:
+            pass
     except:
+        # Keep walking silently
         pass
 
-# Let you run registration without installing. You'll find the command in Edit menu
+# Developer mode ##################################################################################################################
+
+# Lets you run registration without installing. 
 if __name__ == "__main__":
     register()
