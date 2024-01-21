@@ -2,7 +2,7 @@
 
 Part of **T1nk-R Utilities for Blender**
 
-![Alt text](art/repo-card-unified-rename.png)
+![Repo card of the add-on](art/repo-card-unified-rename.png)
 
 ## TL;DR
 
@@ -16,7 +16,7 @@ Help, support, updates and anything else: [https://github.com/gusztavj/T1nkR-Ble
 
 ### Copyright
 
-This add-on has been created by [T1nk-R (https://github.com/gusztavj/)]((https://github.com/gusztavj/)).
+This add-on has been created by [T1nk-R (https://github.com/gusztavj/)](https://github.com/gusztavj/).
 
 **Creative Commons CC BY-NC-SA:**
 
@@ -53,24 +53,24 @@ You may learn more about legal matters on page [https://github.com/gusztavj/T1nk
 You can use this add-on when you are in the **Outliner**, meaning that your mouse cursor is floating over an **Outliner** window. To invoke the dialog, either:
 
 * Hit the shortcut, **CTRL+SHIFT+F2** by default.
-* Right-click on some empty space in the **Outliner** and find **T1nk-R Ultimate Rename** near the end of the menu.
-* Right-click on an object in the **Outliner** and find **T1nk-R Ultimate Rename** near the end of the menu.
-* Right-click on a collectiion in the **Outliner** and find **T1nk-R Ultimate Rename** near the end of the menu.
+* Right-click on some empty space in the **Outliner** and find **T1nk-R Unified Rename** near the end of the menu.
+* Right-click on an object in the **Outliner** and find **T1nk-R Unified Rename** near the end of the menu.
+* Right-click on a collection in the **Outliner** and find **T1nk-R Unified Rename** near the end of the menu.
 
 The dialog features a couple of settings:
 |![Screenshot of the add-on's dialog](art/add-on-dialog.png)|
 |:--:|
-|_The **T1nk-R Ultimate Rename** dialog_|
+|_The **T1nk-R Unified Rename** dialog_|
 
 ### What and how to find and replace
 
 * **Use regex**
-  * Check if you want to specify a regular expression in the **Find what** and **Replace with** fields. 
+  * Check if you want to specify a regular expression in the **Find what** and **Replace with** fields.
   * Leave empty if you want to search plain text and replace it with plain text.
 
 * **Find what**. Enter the search term. If **Use regex** is checked, this will be considered a regular expression, otherwise plain text.
 
-* **Reaplce with**. Enter the replacement term. If **Use regex** is checked, this will be considered a regular expression, otherwise plain text.
+* **Replace with**. Enter the replacement term. If **Use regex** is checked, this will be considered a regular expression, otherwise plain text.
 
 ### Specify scope
 

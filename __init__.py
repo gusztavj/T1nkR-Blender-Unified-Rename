@@ -44,7 +44,7 @@
 
 # Blender add-on identification ===================================================================================================
 bl_info = {
-    "name": "T1nk-R Ultimate Rename (T1nk-R Utilities)",
+    "name": "T1nk-R Unified Rename (T1nk-R Utilities)",
     "author": "T1nk-R (GusJ)",
     "version": (1, 0, 0),
     "blender": (2, 91, 0),
@@ -74,9 +74,9 @@ Store keymaps here to access after registration.
 """
 
 classes = [
-    rename.T1nkerUltimateRenameAddonSettings, 
-    rename.T1nkerUltimateRenameAddonPreferences, 
-    rename.T1NKER_OT_UltimateRename
+    rename.T1nkerUnifiedRenameAddonSettings, 
+    rename.T1nkerUnifiedRenameAddonPreferences, 
+    rename.T1NKER_OT_UnifiedRename
 ]
 """
 List of classes requiring registration and unregistration.
@@ -92,7 +92,7 @@ def menuItem(self, context):
     Add a menu item
     """
     self.layout.operator_context = 'INVOKE_DEFAULT'
-    self.layout.operator(rename.T1NKER_OT_UltimateRename.bl_idname)
+    self.layout.operator(rename.T1NKER_OT_UnifiedRename.bl_idname)
 
 # Register the plugin -------------------------------------------------------------------------------------------------------------
 def register():
@@ -126,7 +126,7 @@ def register():
         # The hotkey will only be available when the mouse is within an Outliner
         km = wm.keyconfigs.addon.keymaps.new(name='Outliner', space_type='OUTLINER')
         
-        kmi = km.keymap_items.new(rename.T1NKER_OT_UltimateRename.bl_idname, 'F2', 'PRESS', ctrl=True, shift=True)
+        kmi = km.keymap_items.new(rename.T1NKER_OT_UnifiedRename.bl_idname, 'F2', 'PRESS', ctrl=True, shift=True)
         
         addon_keymaps.append((km, kmi))
 

@@ -49,7 +49,7 @@ from bpy.types import Operator, AddonPreferences, PropertyGroup
 
 
 # Addon settings for add-on preferences ###########################################################################################
-class T1nkerUltimateRenameAddonSettings(PropertyGroup):
+class T1nkerUnifiedRenameAddonSettings(PropertyGroup):
     isRegex: BoolProperty(
         name="Use regex", 
         description="Click if you want to use regular expressions",
@@ -103,13 +103,13 @@ class T1nkerUltimateRenameAddonSettings(PropertyGroup):
     """
 
 # Addon preferences ###############################################################################################################
-class T1nkerUltimateRenameAddonPreferences(AddonPreferences):
+class T1nkerUnifiedRenameAddonPreferences(AddonPreferences):
     
     # Properties required by Blender ==============================================================================================
     bl_idname = __package__
     
     # Other properties ============================================================================================================
-    settings : PointerProperty(type=T1nkerUltimateRenameAddonSettings)
+    settings : PointerProperty(type=T1nkerUnifiedRenameAddonSettings)
 
     # Public functions ============================================================================================================
 
@@ -127,18 +127,18 @@ class T1nkerUltimateRenameAddonPreferences(AddonPreferences):
 
                 
 # Main operator class #############################################################################################################
-class T1NKER_OT_UltimateRename(Operator):    
+class T1NKER_OT_UnifiedRename(Operator):    
     """Rename collections and objects in one go using plain text or regex"""
     
     # Properties ==================================================================================================================
     
     # Blender-specific stuff ------------------------------------------------------------------------------------------------------    
-    bl_idname = "t1nker.ultimaterename"
-    bl_label = "T1nk-R Ultimate Rename"
+    bl_idname = "t1nker.unifiedrename"
+    bl_label = "T1nk-R Unified Rename"
     bl_options = {'REGISTER', 'UNDO'}    
     
     # Operator settings
-    settings : T1nkerUltimateRenameAddonSettings = None        
+    settings : T1nkerUnifiedRenameAddonSettings = None        
 
     # Lifecycle management ========================================================================================================
     def __init__(self):
@@ -301,7 +301,7 @@ class T1NKER_OT_UltimateRename(Operator):
         Check if the object received is subject to renaming and perform rename if it is.
 
         Args:
-            object (bpy.types.Object or bpty.types.Collection): The object or collection to rename if matching conditions.
+            object (bpy.types.Object or bpy.types.Collection): The object or collection to rename if matching conditions.
 
         Returns:
             True if the item was renamed, false if not
