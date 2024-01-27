@@ -8,7 +8,10 @@ Part of **T1nk-R Utilities for Blender**
 
 You can use this add-on to rename collections and objects in one go, using either plain text or regular expression terms.
 
-You need Blender 2.91 or newer for this add-on to work:
+You need Blender 2.91 or newer for this add-on to work.
+
+![Tutorial on YouTube](art/tutorial.jpg)
+[View tutorial in T1nk-R's YouTube channel](https://www.youtube.com/watch?v=yqaig4bq4o8)
 
 Help, support, updates and anything else: [https://github.com/gusztavj/T1nkR-Blender-Unified-Rename](https://github.com/gusztavj/T1nkR-Blender-Unified-Rename)
 
