@@ -17,7 +17,7 @@
 #
 # ** MIT License **
 # 
-# Copyright (c) 2023, T1nk-R (Gusztáv Jánvári)
+# Copyright (c) 2023-2024, T1nk-R (Gusztáv Jánvári)
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 # (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
@@ -48,6 +48,7 @@
 #
 # *********************************************************************************************************************************
 
+from datetime import datetime
 import bpy
 import re
 from bpy.props import StringProperty, BoolProperty, EnumProperty, PointerProperty
@@ -113,14 +114,24 @@ class T1nkerUnifiedRenameAddonPreferences(AddonPreferences):
     
     # Properties required by Blender ==============================================================================================
     bl_idname = __package__
+    """
+    Blender's ID name for it to know to which add-on this class belongs. This must match the add-on name, 
+    so '__package__' shall be used when defining this in a submodule of a python package.
+    """
     
     # Other properties ============================================================================================================
     settings : PointerProperty(type=T1nkerUnifiedRenameAddonSettings)
 
     # Public functions ============================================================================================================
 
-    # Display addon preferences ===================================================================================================
+    # Display addon preferences ---------------------------------------------------------------------------------------------------
     def draw(self, context):
+        """
+        Draws the UI of the add-on preferences (default settings)
+
+        Args:
+            context (bpy.types.Context): A context object passed on by Blender for the current context.
+        """
         
         layout = self.layout
         
@@ -134,21 +145,29 @@ class T1nkerUnifiedRenameAddonPreferences(AddonPreferences):
                 
 # Main operator class #############################################################################################################
 class T1NKER_OT_UnifiedRename(Operator):    
-    """Rename collections and objects in one go using plain text or regex"""
+    """
+    Rename collections and objects in one go using plain text or regex
+    """
     
     # Properties ==================================================================================================================
     
     # Blender-specific stuff ------------------------------------------------------------------------------------------------------    
     bl_idname = "t1nker.unifiedrename"
-    bl_label = "T1nk-R Unified Rename"
+    bl_label = "Unified Rename (T1nk-R Utils)"
     bl_options = {'REGISTER', 'UNDO'}    
-    
-    # Operator settings
-    settings : T1nkerUnifiedRenameAddonSettings = None        
-
+        
     # Lifecycle management ========================================================================================================
+    
+    # Initialize object -----------------------------------------------------------------------------------------------------------
     def __init__(self):
-        self.settings = None
+        """
+        Make an instance and create a scene-level copy of the settings.
+        """
+        
+        self.settings: T1nkerUnifiedRenameAddonSettings = None
+        """
+        Copy of the operator settings specific to the Blender file (scene)
+        """
     
     # Public functions ============================================================================================================
     
@@ -187,8 +206,19 @@ class T1NKER_OT_UnifiedRename(Operator):
         innerBox = box.box()        
         innerBox.row().prop(self.settings, "isTestOnly")  
 
-    # Show the dialog -------------------------------------------------------------------------------------------------------------
-    def invoke(self, context, event):                
+    # Show the UI -----------------------------------------------------------------------------------------------------------------
+    def invoke(self, context, event):
+        """
+        React to invocation by showing the properties dialog.
+
+        Args:
+            context (bpy.types.Context): A context object passed on by Blender for the current context.
+            event: The event triggering the operation, as passed on by Blender.
+
+        Returns:
+            {'FINISHED'} or {'ERROR'}, indicating success or failure of the operation.
+        """
+        
         # For first run in the session, load addon defaults (otherwise use values set previously in the session)
         if self.settings is None:
             self.settings = context.preferences.addons[__package__].preferences.settings
@@ -199,8 +229,19 @@ class T1NKER_OT_UnifiedRename(Operator):
         return result
 
 
-    # Here is the core stuff ------------------------------------------------------------------------------------------------------
-    def execute(self, context):              
+    # Perform the operation -------------------------------------------------------------------------------------------------------
+    def execute(self, context):          
+        """
+        Executes the operation.
+
+        Args:
+            context (bpy.types.Context): A context object passed on by Blender for the current context.
+
+        Returns:
+            {'FINISHED'} or {'ERROR'}, indicating success or failure of the operation.
+        """
+        
+        operationStarted = f"{datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')}"
         
         status = None
         collectionsRenamed = 0
@@ -210,7 +251,7 @@ class T1NKER_OT_UnifiedRename(Operator):
             print("")
             print("")
             print(f"=" * 80)
-            print(f"T1nk-R Unified Rename started")
+            print(f"T1nk-R Unified Rename started ({operationStarted})")
             print(f"-" * 80)
             
             print("")
@@ -257,20 +298,17 @@ class T1NKER_OT_UnifiedRename(Operator):
             status = {'CANCELLED'}
         
         finally: # Print some summary
-            print(f"-" * 80)
+            # Leave here instead of moving toward the end of the try block as some things might have been changed
+            # even if an error occurred afterwards            
+            summary = \
+                f"Renamed {objectsRenamed if objectsRenamed > 0 else 'no'} object(s) " + \
+                f"and {collectionsRenamed if collectionsRenamed > 0 else 'no'} collections"
+                            
+            self.report({'INFO'}, summary)
             
-            if objectsRenamed == 0:
-                print(f"No objects have been renamed")
-            else:
-                print(f"Renamed {objectsRenamed} object(s)")
-                
-            if collectionsRenamed == 0:
-                print(f"No collections have been renamed")
-            else:
-                print(f"Renamed {collectionsRenamed} object(s)")
-
-            self.report({'INFO'}, f"Renamed {objectsRenamed} object(s) and {collectionsRenamed} collection(s).")
-                
+            print("")
+            print(f"-" * 80)
+            print(summary)    
             print(f"-" * 80)
             print(f"T1nk-R Unified Rename finished")                                            
             print(f"=" * 80)
@@ -286,9 +324,11 @@ class T1NKER_OT_UnifiedRename(Operator):
         """
         Get the Outliner. If context area is outliner, return it.
         
-        Returns: The Outliner object, if there is any.        
+        Returns: The Outliner object, if there is any.      
+        
         """
         
+        # Idea from: https://github.com/K-410/blender-scripts/blob/master/2.8/toggle_hide.py / space_outliner
         context = bpy.context
         if context.area.type == 'OUTLINER':
             return context.space_data

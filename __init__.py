@@ -17,7 +17,7 @@
 #
 # ** MIT License **
 # 
-# Copyright (c) 2023, T1nk-R (Gusztáv Jánvári)
+# Copyright (c) 2023-2024, T1nk-R (Gusztáv Jánvári)
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 # (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
@@ -71,8 +71,8 @@ if "bpy" in locals():
 import bpy
 from . import rename
 
-# Properties ======================================================================================================================
 
+# Properties ======================================================================================================================
 
 addon_keymaps = []
 """
@@ -89,13 +89,15 @@ List of classes requiring registration and unregistration.
 """
 
 
-        
 # Public functions ================================================================================================================
 
 # Register menu item --------------------------------------------------------------------------------------------------------------
 def menuItem(self, context):
     """
-    Add a menu item
+    Add a menu item.
+    
+    Args:
+        context (bpy.types.Context): A context object passed on by Blender for the current context.
     """
     self.layout.operator_context = 'INVOKE_DEFAULT'
     self.layout.operator(rename.T1NKER_OT_UnifiedRename.bl_idname)
@@ -138,6 +140,9 @@ def register():
 
 # Unregister the plugin -----------------------------------------------------------------------------------------------------------
 def unregister():
+    """
+    Delete/unregister what has once been registered, such as menus, hotkeys, classes and so on.
+    """
 
     # Put in try since we perform this as a preliminary cleanup of leftover stuff during registration,
     # and it may be normal that unregistering something simply does not work without being registered first.
