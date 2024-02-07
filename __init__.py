@@ -52,7 +52,7 @@
 bl_info = {
     "name": "T1nk-R Unified Rename (T1nk-R Utilities)",
     "author": "T1nk-R (GusJ)",
-    "version": (1, 2, 1),
+    "version": (1, 2, 0),
     "blender": (2, 91, 0),
     "location": "Outliner > Context menu, Outliner > Context menu of objects and collections",
     "description": "Rename collections and objects in one go, using plain text or regex. Open from Edit menu or hit CTRL+SHIFT+F2 in Outliner.",

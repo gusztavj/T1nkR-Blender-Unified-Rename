@@ -306,7 +306,7 @@ class T1NKER_OT_UnifiedRename(Operator):
         # Call the update checker to check for updates time to time, as specified in 
         # `updateInfo.T1nkerDecoratorUpdateInfo.checkFrequencyDays`
         try:
-            bpy.ops.t1nker.unifiedrenameupdatechecker(forceUpdateCheck=True)            
+            bpy.ops.t1nker.unifiedrenameupdatechecker()            
         except:
             # Don't mess up anything if update checking doesn't work, just ignore the error
             pass
