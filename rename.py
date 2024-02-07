@@ -54,6 +54,7 @@ import re
 from bpy.props import StringProperty, BoolProperty, EnumProperty, PointerProperty
 from bpy.types import Operator, AddonPreferences, PropertyGroup
 
+from . import updateChecker
 
 # Addon settings for add-on preferences ###########################################################################################
 class T1nkerUnifiedRenameAddonSettings(PropertyGroup):
@@ -121,6 +122,14 @@ class T1nkerUnifiedRenameAddonPreferences(AddonPreferences):
     
     # Other properties ============================================================================================================
     settings : PointerProperty(type=T1nkerUnifiedRenameAddonSettings)
+    """
+    Default settings for the add-on.
+    """
+    
+    updateInfo: PointerProperty(type=updateChecker.T1nkerUnifiedRenameUpdateInfo)
+    """
+    Information about the current version and the latest available
+    """
 
     # Public functions ============================================================================================================
 
@@ -140,7 +149,32 @@ class T1nkerUnifiedRenameAddonPreferences(AddonPreferences):
         layout.label(text="Default settings")                
         layout.prop(self.settings, "isRegex")        
         layout.prop(self.settings, "includeObjects")        
-        layout.prop(self.settings, "includeCollections")        
+        layout.prop(self.settings, "includeCollections")    
+        
+        # Update available button
+        #
+        
+        try: # to see if we know anything about updates
+            updateInfo = context.preferences.addons[__package__].preferences.updateInfo
+            
+            # Note that checking update is part of executing the main operator, that is, performing at least
+            # one synchronization. Until that no updates will be detected. Updates are not checked each time
+            # this dialog is drawn, but as set in `updateInfo.T1nkerUnifiedRenameUpdateInfo.checkFrequencyDays`.
+            if updateInfo.updateAvailable:
+                # Draw update button and tip
+                opUpdate = layout.column().row().operator(
+                        'wm.url_open',
+                        text=f"Update available",
+                        icon='URL'
+                        )            
+                opUpdate.url = updateChecker.RepoInfo.repoReleasesUrl
+                layout.row().label(text=f"You can update from {updateInfo.currentVersion} to {updateInfo.latestVersion}")
+        except:
+            # Do nothing, if we could not check updates, probably this is the first time of enabling the add-on
+            # and corresponding data structures are not yet available.
+            pass    
+        
+        
 
                 
 # Main operator class #############################################################################################################
@@ -205,6 +239,34 @@ class T1NKER_OT_UnifiedRename(Operator):
         box.row().label(text="Operation mode")        
         innerBox = box.box()        
         innerBox.row().prop(self.settings, "isTestOnly")  
+        
+        # Update available button
+        #
+        
+        try:
+            updateInfo = context.preferences.addons[__package__].preferences.updateInfo
+            
+            # Note that checking update is part of executing the main operator, that is, performing at least
+            # one synchronization. Until that no updates will be detected. Updates are not checked each time
+            # this dialog is drawn, but as set in `updateInfo.T1nkerUnifiedRenameUpdateInfo.checkFrequencyDays`.
+            if updateInfo.updateAvailable:
+                box = layout.box()
+                
+                row = box.row(align=True)
+                
+                row.label(text="Update available")
+                
+                # Update button            
+                opUpdate = box.row().operator(
+                        'wm.url_open',
+                        text=f"Get new version",
+                        icon='URL'
+                        )            
+                opUpdate.url = updateChecker.RepoInfo.repoReleasesUrl
+                box.row().label(text=f"You can update from {updateInfo.currentVersion} to {updateInfo.latestVersion}")
+        except:
+            # Fail silently if we cannot check for updates or draw the UI
+            pass    
 
     # Show the UI -----------------------------------------------------------------------------------------------------------------
     def invoke(self, context, event):
@@ -240,6 +302,14 @@ class T1NKER_OT_UnifiedRename(Operator):
         Returns:
             {'FINISHED'} or {'ERROR'}, indicating success or failure of the operation.
         """
+        
+        # Call the update checker to check for updates time to time, as specified in 
+        # `updateInfo.T1nkerDecoratorUpdateInfo.checkFrequencyDays`
+        try:
+            bpy.ops.t1nker.unifiedrenameupdatechecker(forceUpdateCheck=True)            
+        except:
+            # Don't mess up anything if update checking doesn't work, just ignore the error
+            pass
         
         operationStarted = f"{datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')}"
         

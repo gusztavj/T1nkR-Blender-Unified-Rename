@@ -52,7 +52,7 @@
 bl_info = {
     "name": "T1nk-R Unified Rename (T1nk-R Utilities)",
     "author": "T1nk-R (GusJ)",
-    "version": (1, 1, 1),
+    "version": (1, 2, 0),
     "blender": (2, 91, 0),
     "location": "Outliner > Context menu, Outliner > Context menu of objects and collections",
     "description": "Rename collections and objects in one go, using plain text or regex. Open from Edit menu or hit CTRL+SHIFT+F2 in Outliner.",
@@ -65,11 +65,22 @@ bl_info = {
 # Reload the main module to make sure it's up to date
 if "bpy" in locals():
     from importlib import reload
-    reload(rename)
+    
+    # Our own libraries
+    libs = [updateChecker, rename]
+    
+    for lib in libs:        
+        try:
+            reload(lib)
+        except:
+            pass
+    
     del reload
 
 import bpy
+from . import updateChecker
 from . import rename
+
 
 
 # Properties ======================================================================================================================
@@ -80,6 +91,8 @@ Store keymaps here to access after registration.
 """
 
 classes = [
+    updateChecker.T1nkerUnifiedRenameUpdateInfo,
+    updateChecker.T1NKER_OT_UnifiedRenameUpdateChecker,
     rename.T1nkerUnifiedRenameAddonSettings, 
     rename.T1nkerUnifiedRenameAddonPreferences, 
     rename.T1NKER_OT_UnifiedRename
